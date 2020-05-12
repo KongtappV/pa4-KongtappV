@@ -35,6 +35,7 @@ public class GOLApp extends Application {
 	private boolean runningState = false;
 	private Timeline timeLine;
 	private int resolution = 700;
+	private boolean drawALIVE = true;
 	
 	GameOfLife gol = new GameOfLife(new Board(70, 70));
 	
@@ -45,6 +46,7 @@ public class GOLApp extends Application {
 	Button playButton;
 	Button randomButton;
 	Button backButton;
+	Button drawButton;
 	//Slider
 	Slider slider;
 	Canvas canvas;
@@ -79,6 +81,7 @@ public class GOLApp extends Application {
 		affine.appendScale( (resolution/gol.board.getRows()), (resolution/gol.board.getColumns()) );
 		FlowPane root = new FlowPane();
 		canvas = new Canvas(resolution, resolution);
+		canvas.setOnMouseDragged( new DrawHandler() );
 		canvas.setOnMousePressed( new DrawHandler() );
 		
 		VBox vbox = new VBox();
@@ -139,6 +142,21 @@ public class GOLApp extends Application {
 			}
 			
 		});
+		drawButton = new Button("Draw");
+		drawButton.setOnAction( new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				if (drawALIVE) {
+					drawALIVE = false;
+					drawButton.setText("Erase");
+				} else {
+					drawALIVE = true;
+					drawButton.setText("Draw");
+				}
+			}
+			
+		});
 		
 		//add Slider
 		slider = new Slider();
@@ -153,7 +171,7 @@ public class GOLApp extends Application {
 
 		playSpeedText.setPrefWidth(35);
 		playSpeedText.textProperty().bindBidirectional(slider.valueProperty(), NumberFormat.getNumberInstance());
-		hbox.getChildren().addAll(vbox, canvas, nextButton, playButton, label, playSpeedText, slider, clearButton, randomButton, backButton);
+		hbox.getChildren().addAll(vbox, canvas, drawButton, nextButton, playButton, label, playSpeedText, slider, clearButton, randomButton, backButton);
 		root.getChildren().addAll(vbox, canvas, hbox);
 		
 		return root;
@@ -220,11 +238,11 @@ public class GOLApp extends Application {
 				if ( runningState ) {
 					//this mean if Play Button is enable you can't edit the board
 					draw(gol.board);
-				} else if (gol.board.getValue(x, y) == gol.board.ALIVE) {
-					gol.board.setDead(x, y);
+				} else if (drawALIVE) {
+					gol.board.setAlive(x, y);
 					draw(gol.board);
 				} else {
-					gol.board.setAlive(x, y);
+					gol.board.setDead(x, y);
 					draw(gol.board);
 				}
 				
@@ -335,6 +353,5 @@ public class GOLApp extends Application {
 	private void timeLinePause() {
 		this.timeLine.stop();
 	}
-	
 	
 }

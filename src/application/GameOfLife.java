@@ -18,8 +18,7 @@ public class GameOfLife {
     /**
      * Initialize the rows and columns of the board and fill
      *
-     * @param height    of the board
-     * @param width of the board
+     * @param board Board of the game.
      */
     public GameOfLife(Board board) {
         this.board = board;
